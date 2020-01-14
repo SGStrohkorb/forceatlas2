@@ -10,8 +10,14 @@
 #
 # Available under the GPLv3
 
-from math import sqrt
+try:
+    import cython
 
+    if not cython.compiled:
+        from math import sqrt
+        print("Warning: uncompiled fa2util module.  Compile with cython for a 10-100x speed boost.")
+except:
+    print("No cython detected.  Install cython and compile the fa2util module for a 10-100x speed boost.")
 
 # This will substitute for the nLayout object
 class Node:
@@ -316,11 +322,3 @@ def adjustSpeedAndApplyForces(nodes, speed, speedEfficiency, jitterTolerance):
 
     return values
 
-
-try:
-    import cython
-
-    if not cython.compiled:
-        print("Warning: uncompiled fa2util module.  Compile with cython for a 10-100x speed boost.")
-except:
-    print("No cython detected.  Install cython and compile the fa2util module for a 10-100x speed boost.")

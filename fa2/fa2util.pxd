@@ -14,7 +14,15 @@
 
 import cython
 
+# sqrt function from C is faster than python's sqrt function. If Cython
+# is not available, then python's sqrt function will be used (check .py
+# file)
+cdef extern from "math.h":
+    cpdef double sqrt "sqrt" (double x)
+
 # This will substitute for the nLayout object
+
+@cython.final # Implies no class inheritance
 cdef class Node:
     cdef public double mass
     cdef public double old_dx, old_dy
@@ -23,6 +31,8 @@ cdef class Node:
 
 # This is not in the original java function, but it makes it easier to
 # deal with edges.
+
+@cython.final # Implies no class inheritance
 cdef class Edge:
     cdef public int node1, node2
     cdef public double weight
@@ -31,9 +41,9 @@ cdef class Edge:
 # adjust the dx and dy values of `n1` (and optionally `n2`).  It does
 # not return anything.
 
-@cython.locals(xDist = cython.double, 
-               yDist = cython.double, 
-               distance2 = cython.double, 
+@cython.locals(xDist = cython.double,
+               yDist = cython.double,
+               distance2 = cython.double,
                factor = cython.double)
 cdef void linRepulsion(Node n1, Node n2, double coefficient=*)
 
@@ -44,20 +54,20 @@ cdef void linRepulsion(Node n1, Node n2, double coefficient=*)
 cdef void linRepulsion_region(Node n, Region r, double coefficient=*)
 
 
-@cython.locals(xDist = cython.double, 
-               yDist = cython.double, 
-               distance = cython.double, 
+@cython.locals(xDist = cython.double,
+               yDist = cython.double,
+               distance = cython.double,
                factor = cython.double)
 cdef void linGravity(Node n, double g)
 
 
-@cython.locals(xDist = cython.double, 
-               yDist = cython.double, 
+@cython.locals(xDist = cython.double,
+               yDist = cython.double,
                factor = cython.double)
 cdef void strongGravity(Node n, double g, double coefficient=*)
 
-@cython.locals(xDist = cython.double, 
-               yDist = cython.double, 
+@cython.locals(xDist = cython.double,
+               yDist = cython.double,
                factor = cython.double)
 cpdef void linAttraction(Node n1, Node n2, double e, bint distributedAttraction, double coefficient=*)
 
@@ -73,6 +83,7 @@ cpdef void apply_gravity(list nodes, double gravity, bint useStrongGravity=*)
 @cython.locals(edge = Edge)
 cpdef void apply_attraction(list nodes, list edges, bint distributedAttraction, double coefficient, double edgeWeightInfluence)
 
+@cython.final # Implies no class inheritance, speeds Region up by a lot
 cdef class Region:
     cdef public double mass
     cdef public double massCenterX, massCenterY
@@ -120,3 +131,4 @@ cdef class Region:
                factor = cython.double,
                values = dict)
 cpdef dict adjustSpeedAndApplyForces(list nodes, double speed, double speedEfficiency, double jitterTolerance)
+

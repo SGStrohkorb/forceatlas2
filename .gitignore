@@ -101,3 +101,6 @@ ENV/
 .mypy_cache/
 
 .idea
+
+build.sh
+fa2/fa2util.html
